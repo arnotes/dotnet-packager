@@ -9,6 +9,7 @@ import { BrowserRouter, Switch, Route} from "react-router-dom";
 import ProjectList from './components/ProjectList';
 import { CssBaseline } from '@material-ui/core';
 import { Routes } from './models/routes';
+import PackagerForm from './components/PackagerForm';
 
 const darkTheme = createMuiTheme({
   palette: {
@@ -30,7 +31,9 @@ function App() {
         <ClippedDrawer>
           <Switch>
             <Route path={Routes.HOME}>
-              <ProjectList/>
+              <ProjectList>
+                <PackagerForm/>
+              </ProjectList>
             </Route>
           </Switch>
         </ClippedDrawer>
