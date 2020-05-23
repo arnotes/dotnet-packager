@@ -1,52 +1,65 @@
-import { List, ListItem, ListItemText, ListItemIcon, Checkbox, Divider, TextField, FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Icon } from '@material-ui/core'
-import React, { Fragment, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { Checkbox, Divider, List, ListItem, ListItemIcon, ListItemText, Badge, BadgeOrigin } from '@material-ui/core'
+import React, { Fragment } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { IAppState } from '../models/appState'
+import { IDictionary } from '../models/dictionary'
 import { IProjectInfo } from '../models/projectInfo'
-import { projectsAction } from '../redux/reducers/projects'
+import { IProjectStatus } from '../models/projectStatus'
+import { projectStateSlicer } from '../redux/reducers/projectStateSlicer'
 import { getChildOfType } from '../utils/getChildOfType'
 import PackagerForm from './PackagerForm'
-import classes from '*.module.css'
-import { useDebouncedState } from '../hooks/useDebouncedState'
+import SearchBar from './SearchBar'
 
 interface Props {
-  children?:JSX.Element
+  children?: JSX.Element | JSX.Element[]
 }
-
+const projBadgeOrigin:BadgeOrigin = {
+  horizontal: 'right',
+  vertical: 'top'
+}
 const ProjectList = (props: Props) => {
-  const [search, setSearch] = useState('');
-  const [dSearch, setdSearch ] = useDebouncedState(search, val => setSearch(val));
-  const reg = new RegExp(search,'i');
-
-
-  const projects = useSelector<IAppState, IProjectInfo[]>(state => state?.settings?.projects || [])
+  const search = useSelector<IAppState, string>(state => state.search ?? '');
+  const projects = useSelector<IAppState, IProjectInfo[]>(
+    state => state?.settings?.projects ?? [],
+    (left, right) => (left?.length ?? 0) === (right?.length ?? 0)
+  )
+  const projectState = useSelector<IAppState, IDictionary<IProjectStatus>>(state => state.projectState ?? {});
+  const reg = new RegExp(search, 'i');
   const dispatch = useDispatch();
-  const handleCheckboxChange = (proj:IProjectInfo, i:number, checked:boolean) => {
-    const updated = {...proj, checked};
-    dispatch(projectsAction({
-      data: updated,
-      index: i
-    }))
+
+  const handleCheckboxChange = (proj: IProjectInfo, i: number, checked: boolean) => {
+    dispatch(projectStateSlicer.actions.setCheckForPublish({
+      name: proj.name,
+      checked
+    }));
   };
-  const projectsListItem = projects.map((x,i) => {
+
+  const projectsListItem = projects.map((x, i) => {
     const matchesSearch = reg.test(`${x.name} ${x.path}`);
     return matchesSearch && (
-      <Fragment key={x.name+'.checkforpublish'}>
+      <Fragment key={x.name + '.checkforpublish'}>
         <ListItem>
           <ListItemIcon>
             <Checkbox
-              onChange={(_e,checked) => handleCheckboxChange(x,i,checked)}
-              value={x.checkedForPublish}
+              onChange={(_e, checked) => handleCheckboxChange(x, i, checked)}
+              value={projectState[x.name]?.checkForPublish}
               edge="start"
               tabIndex={-1}
             />
           </ListItemIcon>
           <ListItemText primary={x.name}
-            secondary={x.path}
+            secondary={
+              <Badge className="proj-badge" 
+                anchorOrigin={projBadgeOrigin}
+                color="secondary"
+                badgeContent={'L'+x.level.toString()}>
+                {x.path}&nbsp;&nbsp;
+              </Badge>              
+            }
             >
           </ListItemText>
         </ListItem>
-        <Divider/>
+        <Divider />
       </Fragment>
     )
   });
@@ -54,26 +67,11 @@ const ProjectList = (props: Props) => {
     <Fragment>
       <div>
         <List component="nav" aria-label="main mailbox folders">
-          <ListItem>
-            <FormControl fullWidth  variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">Search</InputLabel>
-              <OutlinedInput
-                type="search"
-                value={dSearch}
-                onChange={e => setdSearch(e.target.value)}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <Icon className="fas fa-search"/>
-                  </InputAdornment>
-                }
-                labelWidth={70}
-              />
-            </FormControl>
-          </ListItem>
+          {getChildOfType(props.children, SearchBar)}
           {projectsListItem}
         </List>
       </div>
-      <br/>
+      <br />
       {getChildOfType(props.children, PackagerForm)}
     </Fragment>
   )

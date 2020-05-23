@@ -10,6 +10,7 @@ import ProjectList from './components/ProjectList';
 import { CssBaseline } from '@material-ui/core';
 import { Routes } from './models/routes';
 import PackagerForm from './components/PackagerForm';
+import SearchBar from './components/SearchBar';
 
 const darkTheme = createMuiTheme({
   palette: {
@@ -32,6 +33,7 @@ function App() {
           <Switch>
             <Route path={Routes.HOME}>
               <ProjectList>
+                <SearchBar/>
                 <PackagerForm/>
               </ProjectList>
             </Route>

@@ -1,5 +1,9 @@
 import { ISettings } from "./settings";
+import { IDictionary } from "./dictionary";
+import { IProjectStatus } from "./projectStatus";
 
 export interface IAppState{
-  settings?: ISettings
+  search?: string;
+  settings?: ISettings;
+  projectState?: IDictionary<IProjectStatus>
 }
