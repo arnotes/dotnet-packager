@@ -41,8 +41,8 @@ const ProjectList = (props: Props) => {
         <ListItem>
           <ListItemIcon>
             <Checkbox
-              onChange={(_e, checked) => handleCheckboxChange(x, i, checked)}
-              value={projectState[x.name]?.checkForPublish}
+              onChange={(_e,checked) => handleCheckboxChange(x, i, checked)}
+              checked={projectState[x.name]?.checkForPublish ?? false}
               edge="start"
               tabIndex={-1}
             />
