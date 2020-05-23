@@ -11,3 +11,5 @@ export const store = createStore((state:IAppState|undefined, action:any) => {
     projectState: projectStateSlicer.reducer(state.projectState, action)
   } as IAppState
 });
+
+(window as any).__store = store;
