@@ -7,6 +7,8 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import ClippedDrawer from './components/ClippedDrawer';
 import { BrowserRouter, Switch, Route} from "react-router-dom";
 import ProjectList from './components/ProjectList';
+import { CssBaseline } from '@material-ui/core';
+import { Routes } from './models/routes';
 
 const darkTheme = createMuiTheme({
   palette: {
@@ -23,10 +25,11 @@ function App() {
 
   return (
     <BrowserRouter>
+      <CssBaseline />
       <ThemeProvider theme={darkTheme}>
         <ClippedDrawer>
           <Switch>
-            <Route path="/">
+            <Route path={Routes.HOME}>
               <ProjectList/>
             </Route>
           </Switch>

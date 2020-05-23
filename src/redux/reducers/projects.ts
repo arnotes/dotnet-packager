@@ -1,10 +1,10 @@
 import { createAction } from "@reduxjs/toolkit";
-import { IProjectInfo } from "../../models/projectInfo";
 import { IArrayItemAction } from "../../models/arrayItemAction";
+import { IArrayPayload } from "../../models/arrayPayload";
+import { IProjectInfo } from "../../models/projectInfo";
 import { payloadGenerator } from "./payloadGenerator";
 
-export const projectsAction = createAction('updateSingleProject', payloadGenerator<IArrayItemAction<IProjectInfo>>());
-
+export const projectsAction = createAction('updateSingleProject', payloadGenerator<IArrayPayload<IProjectInfo>>());
 export function projectsReducer(state:IProjectInfo[], action:IArrayItemAction<IProjectInfo>){
   if(action.type === projectsAction.type){
     return [

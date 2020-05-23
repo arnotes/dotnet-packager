@@ -1,6 +1,6 @@
 import { IArrayPayload } from "./arrayPayload";
 
 export interface IArrayItemAction<T>{
-  type: string,
+  type?: string,
   payload:IArrayPayload<T>
 }
