@@ -1,12 +1,11 @@
 import * as __fs from "fs";
+import { ISettings } from "../models/settings";
 const fs:typeof __fs = window.require('fs');
 
 export class FileService{
-  constructor(){
-
-  }
-  getSettings(){
-    console.log(fs.readFileSync('tsconfig.json').toString());
+  getSettings():ISettings{
+    const str = fs.readFileSync('settings.json').toString();
+    return JSON.parse(str);
   }
 }
 

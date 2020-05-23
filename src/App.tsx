@@ -1,14 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import './App.css';
+import { settingsAction } from './redux/reducers/settings';
 import { fileSvc } from './services/fileService';
-import { shellSvc } from './services/shellService';
 
 function App() {
-  return (
+  const dispatch = useDispatch();
+  
+  useEffect(()=>{
+    const settings = fileSvc.getSettings();
+    dispatch(settingsAction(settings));
+  },[dispatch]);
+
+  return (    
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <pre>
+
+        </pre>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
@@ -21,8 +30,7 @@ function App() {
           Learn React
         </a>
         <button onClick={e => {
-          fileSvc.getSettings();
-          shellSvc.dotnetVersion();
+
         }}>asdf</button>
       </header>
     </div>
