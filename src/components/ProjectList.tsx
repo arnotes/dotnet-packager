@@ -41,6 +41,7 @@ const ProjectList = (props: Props) => {
         <ListItem>
           <ListItemIcon>
             <Checkbox
+              color="primary"
               onChange={(_e,checked) => handleCheckboxChange(x, i, checked)}
               checked={projectState[x.name]?.checkForPublish ?? false}
               edge="start"

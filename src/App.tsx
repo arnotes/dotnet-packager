@@ -15,8 +15,15 @@ import SearchBar from './components/SearchBar';
 const darkTheme = createMuiTheme({
   palette: {
     type: 'dark',
+    primary: {
+      main: '#1b5e20'
+    },
+    secondary: {
+      main: '#2979ff',
+    },    
   },
 });
+
 function App() {
   const dispatch = useDispatch();
   
