@@ -68,14 +68,18 @@ export class nuget{
     const xmlDoc = parser.parseFromString(str,"text/xml");
     return xmlDoc;
   }
+
+  static writeXML(xmlDoc:Document, proj:IProjectInfo){
+    const serializer = new XMLSerializer();
+    const xmlString = serializer.serializeToString(xmlDoc);
+    fileSvc.writeFile(proj.path, xmlString);
+  }
   
   static saveProjectVersion(proj:IProjectInfo, state:IDictionary<IProjectStatus>){
     const v = state[proj.name].version;
     const xmlDoc = nuget.getXML(proj);
     xmlDoc.querySelector('Version').innerHTML = v;
-    const serializer = new XMLSerializer();
-    const xmlString = serializer.serializeToString(xmlDoc);
-    fileSvc.writeFile(proj.path, xmlString);
+    nuget.writeXML(xmlDoc, proj);
   }
 
   static async _build(projState:IDictionary<IProjectStatus>, projects:IProjectInfo[]){
