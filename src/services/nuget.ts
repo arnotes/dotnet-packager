@@ -5,6 +5,7 @@ import { projectStateSlicer } from "../redux/reducers/projectStateSlicer";
 import { hasParent } from "../utils/hasParent";
 import { fileSvc } from "./fileService";
 import { shellSvc } from "./shellService";
+import { store } from "../redux/store";
 
 export class nuget{
   static publish(project:IProjectInfo){
@@ -82,11 +83,16 @@ export class nuget{
     return await nuget.build(toPublish[0]);
   }
 
-  static beginPublish(projState:IDictionary<IProjectStatus>, projects:IProjectInfo[]){
-    console.log({projects});
-    for (const proj of projects) {
+  static beginPublish(projState:IDictionary<IProjectStatus>, toPublish:IProjectInfo[], allProjects:IProjectInfo[]){
+    for (const proj of toPublish) {
       nuget.saveProjectVersion(proj, projState);
     }
+    const settings = store.getState().settings;
+    shellSvc.spawn('node', [
+      'js-utils/external-scripts/publish-all.js',
+      JSON.stringify(JSON.stringify(toPublish)),
+      JSON.stringify(JSON.stringify(settings))
+    ]);
   }
 
   static async build(proj:IProjectInfo){

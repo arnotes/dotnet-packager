@@ -31,7 +31,7 @@ const PackagerForm = (props: Props) => {
       dispatch(projectStateSlicer.actions.unCheckPublishValuesAll());
     }else{
       const toPublish = projInfos.filter(x => stateRef.current[x.name]?.checkForPublish);
-      nuget.beginPublish(stateRef.current, toPublish);
+      nuget.beginPublish(stateRef.current, toPublish, projInfos);
     }
   }
   return (
