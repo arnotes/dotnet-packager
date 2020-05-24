@@ -25,7 +25,7 @@
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "electron": "tsc -p desktop && electron .",
+    "electron": "tsc -p external-scripts && tsc -p desktop && electron .",
     "pack": "electron-packager --overwrite --ignore=\"(^node_modules(?!/dugite).*|foo*|^src*)\" .",
     "start": "react-scripts start",
     "build": "react-scripts build",

@@ -9,6 +9,7 @@
 /coverage
 
 # production
+/js-utils
 /build
 /build-desktop
 /icediff-win32-x64
