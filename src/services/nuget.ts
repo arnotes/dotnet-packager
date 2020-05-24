@@ -76,10 +76,21 @@ export class nuget{
   }
   
   static saveProjectVersion(proj:IProjectInfo, state:IDictionary<IProjectStatus>){
-    const v = state[proj.name].version;
-    const xmlDoc = nuget.getXML(proj);
-    xmlDoc.querySelector('Version').innerHTML = v;
-    nuget.writeXML(xmlDoc, proj);
+    let xmlStr = fileSvc.readFile(proj.path);
+    const xmlDoc = new DOMParser().parseFromString(xmlStr, 'text/xml');
+
+    const oldVersion = xmlDoc.querySelector('Version').innerHTML;
+    const newVersion = state[proj.name].version;
+    xmlStr = xmlStr.replace(
+      `<Version>${oldVersion}</Version>`,
+      `<Version>${newVersion}</Version>`
+    );
+    fileSvc.writeFile(proj.path, xmlStr);
+
+    /** trims too many white spaces */
+    //const xmlDoc = nuget.getXML(proj);
+    // xmlDoc.querySelector('Version').innerHTML = v;
+    // nuget.writeXML(xmlDoc, proj);
   }
 
   static async _build(projState:IDictionary<IProjectStatus>, projects:IProjectInfo[]){

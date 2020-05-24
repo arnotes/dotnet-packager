@@ -1,7 +1,7 @@
 import { IProjectInfo } from "../src/models/projectInfo";
 import { ISettings } from "../src/models/settings";
 import { getProjectParents } from "../src/utils/getProjectParents";
-import { nuget } from "../src/services/nuget";
+import { JSDOM } from "jsdom";
 import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
@@ -39,11 +39,7 @@ function packProject(proj:IProjectInfo){
   });
   console.log(pack.toString());
 
-  console.log('---TEST---');
   const files = fs.readdirSync(outPutDir);
-  console.log(JSON.stringify(files));
-  console.log('---TEST---');
-
   const nupkg = files.find(x => !x.includes('.symbols.'));
   if(!nupkg){
     throw new Error('failed to generate package');
@@ -66,13 +62,22 @@ function installToParents(nupkg:string, child:IProjectInfo){
   const parents = getProjectParents(child, settings.projects ?? []);
   for (const parent of parents) {
     console.log(`Installing ${child.name} to ${parent.name}`)
+    //GET XML
+    let csprojStr = fs.readFileSync(parent.path).toString();
+    const csprojXml = new JSDOM(csprojStr);
+    const packRef = csprojXml.window.document
+                      .querySelector(`PackageReference[Include="${child.name}"]`);
+    const oldChildVersion = packRef.getAttribute('Version');
+    const newChildVersion = nupkg.replace(`${child.name}.`,'').replace('.nupkg','');
 
-    const csprojXml = nuget.getXML(parent);
-    const packRef = csprojXml.querySelector(`PackageReference[Include="${child.name}"]`);
-    const childVersion = nupkg.replace(`${child.name}.`,'').replace('.nupkg','');
-    packRef.setAttribute('Version', childVersion);
-    nuget.writeXML(csprojXml, parent);
+    //SAVE XML
+    csprojStr = csprojStr.replace(
+      `Include="${child.name}" Version="${oldChildVersion}"`,
+      `Include="${child.name}" Version="${newChildVersion}"`
+    );
+    fs.writeFileSync(parent.path, csprojStr);
 
+    //THEN BUILD
     buildProject(parent);
   }
 }
