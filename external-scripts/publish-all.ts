@@ -59,24 +59,21 @@ function pushPackage(nupkg:string, proj:IProjectInfo){
 }
 //----------------------------------------------------------------------------------------------
 function installToParents(nupkg:string, child:IProjectInfo){
+  /**
+   * https://github.com/NuGet/Home/issues/5163
+   * fail :(
+   */
   const parents = getProjectParents(child, settings.projects ?? []);
+  const newChildVersion = nupkg.replace(`${child.name}.`,'').replace('.nupkg','');
+
   for (const parent of parents) {
     console.log(`Installing ${child.name} to ${parent.name}`)
-    //GET XML
-    let csprojStr = fs.readFileSync(parent.path).toString();
-    const csprojXml = new JSDOM(csprojStr);
-    const packRef = csprojXml.window.document
-                      .querySelector(`PackageReference[Include="${child.name}"]`);
-    const oldChildVersion = packRef.getAttribute('Version');
-    const newChildVersion = nupkg.replace(`${child.name}.`,'').replace('.nupkg','');
-
-    //SAVE XML
-    csprojStr = csprojStr.replace(
-      `Include="${child.name}" Version="${oldChildVersion}"`,
-      `Include="${child.name}" Version="${newChildVersion}"`
-    );
-    fs.writeFileSync(parent.path, csprojStr);
-
+    const cwd = path.dirname(parent.path);
+    const install = execSync(`dotnet add package ${child.name} -v ${newChildVersion} -s ${settings.nugetAuthSource}`,{
+      maxBuffer,
+      cwd
+    });
+    console.log(install.toString());    
     //THEN BUILD
     buildProject(parent);
   }
