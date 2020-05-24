@@ -71,6 +71,8 @@ export class nuget{
   static async build(proj:IProjectInfo){
     
     //const args = ['build'];
+    //await shellSvc.command('dotnet restore', shellSvc.getDirname(proj.path))
+    console.log('nuget.restore');
     const result = await shellSvc.command('dotnet build --force', shellSvc.getDirname(proj.path));
     console.log('nuget.build', result);
     return result;

@@ -40,12 +40,12 @@ export class ShellService {
       console.log('shell.command.exit',{code, signal});
       sbjResult.next(new ShellResult(code, signal));
       sbjResult.complete();
-      cmdResult.removeAllListeners();
+
     }).on('error', (code:number, signal:any)=>{
       console.log('shell.command.error',{code, signal});
       sbjResult.next(new ShellResult(code, signal));
       sbjResult.complete();
-      cmdResult.removeAllListeners();      
+
     });
     return sbjResult.pipe(take(1)).toPromise();
   }
