@@ -1,11 +1,10 @@
 import { Button, Icon } from '@material-ui/core';
 import React, { useRef } from 'react';
-import { PublishSetupDialogRef, PublishSetupDialog } from './PublishSetupDialog';
+import { useDispatch } from 'react-redux';
+import { usePublishInfo } from '../hooks/usePublishInfo';
 import { projectStateSlicer } from '../redux/reducers/projectStateSlicer';
-import { useDispatch, useSelector } from 'react-redux';
-import { IAppState } from '../models/appState';
-import { IDictionary } from '../models/dictionary';
-import { IProjectStatus } from '../models/projectStatus';
+import { nuget } from '../services/nuget';
+import { PublishSetupDialog, PublishSetupDialogRef } from './PublishSetupDialog';
 
 
 interface Props {
@@ -17,9 +16,7 @@ const rootStyle:React.CSSProperties = {
 }
 
 const PackagerForm = (props: Props) => {
-  const hasPublish = useSelector<IAppState,boolean>(({ projectState }) => {
-    return Object.keys(projectState || {}).some((key) => projectState[key].checkForPublish)
-  });
+  const [projState, projInfos, hasPublish] = usePublishInfo();
   const dialogRef = useRef<PublishSetupDialogRef>();
   const dispatch = useDispatch();
   const startPublish = async () => {
@@ -30,6 +27,8 @@ const PackagerForm = (props: Props) => {
     const willPublish =  await dialogRef.current.show();
     if(!willPublish){
       dispatch(projectStateSlicer.actions.unCheckPublishValuesAll());
+    }else{
+      await nuget._build(projState, projInfos);
     }
   }
   return (

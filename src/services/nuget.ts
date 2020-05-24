@@ -1,8 +1,10 @@
-import { IProjectInfo } from "../models/projectInfo";
 import { IDictionary } from "../models/dictionary";
-import { fileSvc } from "./fileService";
+import { IProjectInfo } from "../models/projectInfo";
+import { IProjectStatus } from "../models/projectStatus";
 import { projectStateSlicer } from "../redux/reducers/projectStateSlicer";
 import { hasParent } from "../utils/hasParent";
+import { fileSvc } from "./fileService";
+import { shellSvc } from "./shellService";
 
 export class nuget{
   static publish(project:IProjectInfo){
@@ -59,5 +61,18 @@ export class nuget{
     const str = fileSvc.readFile(project.path);
     const xmlDoc = parser.parseFromString(str,"text/xml");
     return xmlDoc.querySelector('Version').innerHTML;
-  }  
+  }
+
+  static async _build(projState:IDictionary<IProjectStatus>, projects:IProjectInfo[]){
+    const toPublish = projects.filter(x => projState[x.name]?.checkForPublish);
+    return await nuget.build(toPublish[0]);
+  }
+
+  static async build(proj:IProjectInfo){
+    
+    //const args = ['build'];
+    const result = await shellSvc.command('dotnet build --force', shellSvc.getDirname(proj.path));
+    console.log('nuget.build', result);
+    return result;
+  }
 }

@@ -1,4 +1,4 @@
-import { List, ListItem, TextField } from '@material-ui/core';
+import { List, ListItem, TextField, ListItemSecondaryAction, IconButton, Icon } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -50,6 +50,13 @@ function _PublishSetupDialog(props:Props, ref:any) {
     sbjDialogReponse.current.next(willPublish);
   };
 
+  const handleUnpublish = (proj:IProjectInfo) => {
+    dispatch(projectStateSlicer.actions.setCheckForPublish({
+      checked: false,
+      name: proj.name
+    }))
+  }
+
   useImperativeHandle(ref,() => ({
     show: () => {
       setOpen(true);
@@ -86,6 +93,12 @@ function _PublishSetupDialog(props:Props, ref:any) {
           }}
           variant="outlined"
         />
+        &nbsp;&nbsp;&nbsp;
+        <ListItemSecondaryAction>
+          <IconButton onClick={()=>handleUnpublish(proj)} edge="end" aria-label="delete">
+            <Icon className="fas fa-times" />
+          </IconButton>
+        </ListItemSecondaryAction>
       </ListItem>
     )
   );
@@ -98,7 +111,7 @@ function _PublishSetupDialog(props:Props, ref:any) {
       aria-labelledby="scroll-dialog-title"
       aria-describedby="scroll-dialog-description"
     >
-      <DialogTitle id="scroll-dialog-title">Set project verions</DialogTitle>
+      <DialogTitle>Set project verions</DialogTitle>
       <DialogContent dividers={scroll === 'paper'}>
         <List>
           {projectList}
