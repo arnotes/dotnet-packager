@@ -41,6 +41,10 @@ export class FileService{
     const str = fs.readFileSync(path).toString();
     return str;
   }
+
+  writeFile(path:string, content:string){
+    fs.writeFileSync(path, content);
+  }
 }
 
 export const fileSvc = new FileService();

@@ -32,7 +32,7 @@ export class ShellService {
     const cmdResult = cp.exec(cmd, {
       cwd: path,
       maxBuffer: 5e+8,
-      windowsHide: false
+      windowsHide: false,
     });
     //cmdResult.stdout.pipe(process.stdout)
     cmdResult.on('exit', (code:number, signal:any) => {
@@ -40,6 +40,7 @@ export class ShellService {
       console.log('shell.command.exit',{code, signal});
       sbjResult.next(new ShellResult(code, signal));
       sbjResult.complete();
+
 
     }).on('error', (code:number, signal:any)=>{
       console.log('shell.command.error',{code, signal});
@@ -49,6 +50,15 @@ export class ShellService {
     });
     return sbjResult.pipe(take(1)).toPromise();
   }
+
+  spawn(cmd = '', args = ['']){
+    cp.spawn(cmd, args, {
+      detached: true,
+      shell: true,
+      cwd: '.'
+    });
+  };
+
   getDirname(filePath: string) {
     return path.dirname(filePath);
   }

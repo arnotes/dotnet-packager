@@ -14,6 +14,7 @@ import { nuget } from '../services/nuget';
 import { projectStateSlicer } from '../redux/reducers/projectStateSlicer';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
+import StateDebouncer from './StateDebouncer';
 
 interface Props{
 
@@ -57,6 +58,16 @@ function _PublishSetupDialog(props:Props, ref:any) {
     }))
   }
 
+  const handleVersionChange = (projName:string, version:string) => {
+    dispatch(projectStateSlicer.actions.setProjectState({
+      name: projName,
+      status: {
+        ...myState.projectState[projName],
+        version
+      }
+    }))
+  }
+
   useImperativeHandle(ref,() => ({
     show: () => {
       setOpen(true);
@@ -84,15 +95,22 @@ function _PublishSetupDialog(props:Props, ref:any) {
     myState.projects.map(proj => 
       myState.projectState[proj.name]?.checkForPublish && 
       <ListItem key={proj.name}>
-        <TextField
-          value={myState.projectState[proj.name]?.version ?? ''}
-          label={proj.name}
-          type="text"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="outlined"
-        />
+        <StateDebouncer 
+          onStateChange={(s)=>handleVersionChange(proj.name, s)}
+          state={myState.projectState[proj.name]?.version ?? ''}>
+          {(dState, setDState)=>(
+            <TextField
+              value={dState}
+              onChange={(e)=>setDState(e.target.value)}
+              label={proj.name}
+              type="text"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              variant="outlined"
+            />
+          )}
+        </StateDebouncer>
         &nbsp;&nbsp;&nbsp;
         <ListItemSecondaryAction>
           <IconButton onClick={()=>handleUnpublish(proj)} edge="end" aria-label="delete">

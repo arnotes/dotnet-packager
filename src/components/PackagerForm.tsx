@@ -17,6 +17,8 @@ const rootStyle:React.CSSProperties = {
 
 const PackagerForm = (props: Props) => {
   const [projState, projInfos, hasPublish] = usePublishInfo();
+  const stateRef = useRef(projState);
+  stateRef.current = projState;
   const dialogRef = useRef<PublishSetupDialogRef>();
   const dispatch = useDispatch();
   const startPublish = async () => {
@@ -28,7 +30,8 @@ const PackagerForm = (props: Props) => {
     if(!willPublish){
       dispatch(projectStateSlicer.actions.unCheckPublishValuesAll());
     }else{
-      await nuget._build(projState, projInfos);
+      const toPublish = projInfos.filter(x => stateRef.current[x.name]?.checkForPublish);
+      nuget.beginPublish(stateRef.current, toPublish);
     }
   }
   return (

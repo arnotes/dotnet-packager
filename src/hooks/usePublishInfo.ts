@@ -22,7 +22,7 @@ export function usePublishInfo(){
       }
     },
     (a, b) => {
-      return a.projState === b.projState ||
+      return a.projState === b.projState &&
         a.projects.length === b.projects.length
     }
   );

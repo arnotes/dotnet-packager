@@ -57,10 +57,24 @@ export class nuget{
   }
 
   static getProjectVersion(project:IProjectInfo){
+    const xmlDoc = nuget.getXML(project);
+    return xmlDoc.querySelector('Version').innerHTML;
+  }
+
+  static getXML(project:IProjectInfo){
     const parser = new DOMParser();
     const str = fileSvc.readFile(project.path);
     const xmlDoc = parser.parseFromString(str,"text/xml");
-    return xmlDoc.querySelector('Version').innerHTML;
+    return xmlDoc;
+  }
+  
+  static saveProjectVersion(proj:IProjectInfo, state:IDictionary<IProjectStatus>){
+    const v = state[proj.name].version;
+    const xmlDoc = nuget.getXML(proj);
+    xmlDoc.querySelector('Version').innerHTML = v;
+    const serializer = new XMLSerializer();
+    const xmlString = serializer.serializeToString(xmlDoc);
+    fileSvc.writeFile(proj.path, xmlString);
   }
 
   static async _build(projState:IDictionary<IProjectStatus>, projects:IProjectInfo[]){
@@ -68,13 +82,16 @@ export class nuget{
     return await nuget.build(toPublish[0]);
   }
 
-  static async build(proj:IProjectInfo){
-    
-    //const args = ['build'];
-    //await shellSvc.command('dotnet restore', shellSvc.getDirname(proj.path))
-    console.log('nuget.restore');
-    const result = await shellSvc.command('dotnet build --force', shellSvc.getDirname(proj.path));
-    console.log('nuget.build', result);
-    return result;
+  static beginPublish(projState:IDictionary<IProjectStatus>, projects:IProjectInfo[]){
+    console.log({projects});
+    for (const proj of projects) {
+      nuget.saveProjectVersion(proj, projState);
+    }
   }
+
+  static async build(proj:IProjectInfo){
+    console.log('start spawn');
+    shellSvc.spawn('node', ['external-scripts/publish-all.js', JSON.stringify(JSON.stringify(proj))]);
+    //shellSvc.spawn('dotnet', ['build']);
+  }  
 }
