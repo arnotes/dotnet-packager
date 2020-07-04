@@ -48,7 +48,7 @@ export default function ClippedDrawer({children}:{children:any}) {
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" noWrap>
-            dotNET Packager UI <Icon className="fa fa-plus-circle" />
+            .NET Packager UI <Icon className="fa fa-plus-circle" />
           </Typography>
         </Toolbar>
       </AppBar>

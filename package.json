@@ -27,12 +27,13 @@
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "electron": "tsc -p external-scripts && tsc -p desktop && electron .",
-    "pack": "electron-packager --overwrite --ignore=\"(^node_modules(?!/dugite).*|foo*|^src*)\" .",
+    "build-desktop": "tsc -p external-scripts && tsc -p desktop",
+    "electron": "npm run build-desktop && electron .",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "pack": "env NODE_ENV=production && npm run build && npm run build-desktop && electron-packager . --overwrite --platform=win32"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -50,6 +51,7 @@
     ]
   },
   "devDependencies": {
-    "electron": "^9.0.0"
+    "electron": "^9.0.0",
+    "electron-packager": "^15.0.0"
   }
 }

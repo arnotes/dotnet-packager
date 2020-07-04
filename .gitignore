@@ -13,6 +13,7 @@
 /build
 /build-desktop
 /icediff-win32-x64
+/dotnet-packager-win32-x64
 settings.json
 # misc
 .DS_Store

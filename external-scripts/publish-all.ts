@@ -50,8 +50,11 @@ function packProject(proj:IProjectInfo){
 function pushPackage(nupkg:string, proj:IProjectInfo){
   const cwd = path.dirname(proj.path);
   const outPutDir = path.join(cwd, outputPath);
-
-  const push = execSync(`dotnet nuget push ${nupkg} --skip-duplicate -k ${settings.nugetKey} -s ${settings.nugetSource}`,{
+  let cmd = `dotnet nuget push ${nupkg} --skip-duplicate `;
+  cmd+= `-k ${settings.nugetKey} `;
+  cmd+= `-s ${settings.nugetSource} `;
+  cmd+= `-ss ${settings.nugetSource.replace('.nupkg', '.symbols.nupkg')} `;
+  const push = execSync(cmd,{
     maxBuffer,
     cwd: outPutDir
   });
@@ -69,7 +72,8 @@ function installToParents(nupkg:string, child:IProjectInfo){
   for (const parent of parents) {
     console.log(`Installing ${child.name} to ${parent.name}`)
     const cwd = path.dirname(parent.path);
-    const install = execSync(`dotnet add package ${child.name} -v ${newChildVersion} -s ${settings.nugetAuthSource}`,{
+    const install = execSync(`dotnet add package ${child.name} -v ${newChildVersion} -s '${settings.nugetAuthSource}'`,{
+    //const install = execSync(`nuget install ${child.name} -Version ${newChildVersion}`,{
       maxBuffer,
       cwd
     });

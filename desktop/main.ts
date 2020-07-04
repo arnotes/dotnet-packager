@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
-
+const isProd = process.env.NODE_ENV === 'production';
 let mainWindow: Electron.BrowserWindow | null;
 
 function createWindow() {
@@ -8,19 +8,24 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     height: 600,
     webPreferences: {
-      devTools: true,
+      devTools: !isProd,
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true
     },
     width: 1000,
   });
 
+  isProd && mainWindow.removeMenu();
+
   // and load the index.html of the app.
-  //mainWindow.loadFile(path.join(__dirname, "../build/index.html"));
-  mainWindow.loadURL("http://localhost:3000");
+  if(isProd){
+    mainWindow.loadFile(path.join(__dirname, "../build/index.html"));
+  }else{
+    mainWindow.loadURL("http://localhost:3000");
+  }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  mainWindow.webContents.toggleDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {

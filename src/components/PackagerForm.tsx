@@ -28,11 +28,12 @@ const PackagerForm = (props: Props) => {
 
     const willPublish =  await dialogRef.current.show();
     if(!willPublish){
-      dispatch(projectStateSlicer.actions.unCheckPublishValuesAll());
+      //dispatch(projectStateSlicer.actions.unCheckPublishValuesAll());
     }else{
       const toPublish = projInfos.filter(x => stateRef.current[x.name]?.checkForPublish);
       nuget.beginPublish(stateRef.current, toPublish, projInfos);
     }
+    dispatch(projectStateSlicer.actions.unCheckPublishValuesAll());
   }
   return (
     <div className="PackagerForm" style={rootStyle}>
