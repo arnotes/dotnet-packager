@@ -1,10 +1,17 @@
 import { IProjectInfo } from "../src/models/projectInfo";
 import { ISettings } from "../src/models/settings";
 import { getProjectParents } from "../src/utils/getProjectParents";
-import { JSDOM } from "jsdom";
 import { execSync } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
+//----------------------------------------------------------------------------------------------
+function createPromise(ms:number){
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(true);
+    }, ms);
+  });
+}
 //----------------------------------------------------------------------------------------------
 const maxBuffer = 5e+8;
 const outputPath = 'bin/dotnet-packager';
@@ -47,7 +54,7 @@ function packProject(proj:IProjectInfo){
   return nupkg;
 }
 //----------------------------------------------------------------------------------------------
-function pushPackage(nupkg:string, proj:IProjectInfo){
+async function pushPackage(nupkg:string, proj:IProjectInfo){
   const cwd = path.dirname(proj.path);
   const outPutDir = path.join(cwd, outputPath);
   let cmd = `dotnet nuget push ${nupkg} --skip-duplicate `;
@@ -59,6 +66,7 @@ function pushPackage(nupkg:string, proj:IProjectInfo){
     cwd: outPutDir
   });
   console.log(push.toString());
+  await createPromise(2500);
 }
 //----------------------------------------------------------------------------------------------
 function installToParents(nupkg:string, child:IProjectInfo){
@@ -87,7 +95,7 @@ const main = async () => {
   try {    
     for (const proj of toPublish) {
       const nupkg = packProject(proj);
-      pushPackage(nupkg, proj);
+      await pushPackage(nupkg, proj);
       installToParents(nupkg, proj);
     }
   } catch (error) {
