@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = app.isPackaged;
 let mainWindow: Electron.BrowserWindow | null;
 
 function createWindow() {
