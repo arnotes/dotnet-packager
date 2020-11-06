@@ -87,7 +87,7 @@ function installToParents(nupkg:string, child:IProjectInfo){
     console.log(`Installing ${child.name} to ${parent.name}`)
     const cwd = path.dirname(parent.path);
     try {
-      const install = execSync(`dotnet add package ${child.name} -v ${newChildVersion} -s "${settings.nugetAuthSource}"`,{
+      const install = execSync(`dotnet add package ${child.name} -v ${newChildVersion} -s "${settings.nugetSource}"`,{
       //const install = execSync(`nuget install ${child.name} -Version ${newChildVersion}`,{
         maxBuffer,
         cwd
